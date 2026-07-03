@@ -33,7 +33,7 @@ public:
     window_info.style |= WS_VISIBLE;
 #else
     CefRect bounds = {0, 0, 0, 0};
-    window_info.SetAsChild(nullptr, bounds);
+    window_info.SetAsChild(0, bounds);
 #endif
 
     CefBrowserHost::CreateBrowserSync(window_info, handler, url, settings,
