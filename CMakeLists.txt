@@ -66,15 +66,25 @@ add_custom_target(package
   VERBATIM)
 
 if(OS_WINDOWS)
-  set(PACKAGE_ARCHIVE "${CMAKE_BINARY_DIR}/${PACKAGE_NAME}.zip")
+  set(PACKAGE_ARCHIVE "${CMAKE_BINARY_DIR}/${PACKAGE_NAME}-windows.zip")
   add_custom_target(package_archive
     COMMAND ${CMAKE_COMMAND} -E tar cf "${PACKAGE_ARCHIVE}" --format=zip "${PACKAGE_NAME}"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
     COMMENT "Creating ${PACKAGE_ARCHIVE}"
     VERBATIM)
   add_dependencies(package_archive package)
-else()
-  set(PACKAGE_ARCHIVE "${CMAKE_BINARY_DIR}/${PACKAGE_NAME}.tar.gz")
+elseif(OS_LINUX)
+  set(PACKAGE_ARCHIVE "${CMAKE_BINARY_DIR}/${PACKAGE_NAME}-linux.tar.gz")
+  add_custom_target(package_archive
+    COMMAND ${CMAKE_COMMAND} -E tar cf "${PACKAGE_ARCHIVE}" --format=gnutar "${PACKAGE_NAME}"
+    COMMAND ${CMAKE_COMMAND} -E tar xf "${PACKAGE_ARCHIVE}"
+    COMMAND ${CMAKE_COMMAND} -E tar czf "${PACKAGE_ARCHIVE}" "${PACKAGE_NAME}"
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    COMMENT "Creating ${PACKAGE_ARCHIVE}"
+    VERBATIM)
+  add_dependencies(package_archive package)
+elseif(OS_MAC)
+  set(PACKAGE_ARCHIVE "${CMAKE_BINARY_DIR}/${PACKAGE_NAME}-macos.tar.gz")
   add_custom_target(package_archive
     COMMAND ${CMAKE_COMMAND} -E tar cf "${PACKAGE_ARCHIVE}" --format=gnutar "${PACKAGE_NAME}"
     COMMAND ${CMAKE_COMMAND} -E tar xf "${PACKAGE_ARCHIVE}"
