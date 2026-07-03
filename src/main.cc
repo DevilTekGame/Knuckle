@@ -37,6 +37,7 @@ public:
     CefRect bounds = {0, 0, 0, 0};
     window_info.SetAsChild(0, bounds);
 #endif
+    window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
 
     CefBrowserHost::CreateBrowserSync(window_info, handler, url, settings,
                                       nullptr, nullptr);
