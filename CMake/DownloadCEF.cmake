@@ -30,7 +30,7 @@ else()
 endif()
 
 string(REPLACE "+" "%2B" CEF_VERSION_URL "${CEF_VERSION}")
-set(CEF_FILENAME "cef_binary_${CEF_VERSION}_${CEF_PLATFORM}.${CEF_EXT}")
+set(CEF_FILENAME "cef_binary_${CEF_VERSION_URL}_${CEF_PLATFORM}.${CEF_EXT}")
 set(CEF_URL "https://cef-builds.spotifycdn.com/${CEF_FILENAME}")
 
 set(CEF_DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/cef_download")
