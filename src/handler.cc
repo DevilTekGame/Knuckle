@@ -1,6 +1,11 @@
 #include "handler.h"
 #include "include/cef_browser.h"
 #include "include/cef_app.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #include <iostream>
 
 void Handler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -8,6 +13,15 @@ void Handler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     main_browser_ = browser;
   }
   browser_count_++;
+
+#if defined(OS_WIN)
+  HWND hwnd = browser->GetHost()->GetWindowHandle();
+  HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(1));
+  if (hIcon) {
+    SendMessage(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
+    SendMessage(hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
+  }
+#endif
 }
 
 bool Handler::DoClose(CefRefPtr<CefBrowser> browser) {
