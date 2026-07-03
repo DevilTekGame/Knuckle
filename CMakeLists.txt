@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(Knuckle VERSION 1.0.0 LANGUAGES CXX)
+project(Knuckle VERSION 1.0.0 LANGUAGES C CXX)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/CMake/DownloadCEF.cmake")
 list(APPEND CMAKE_MODULE_PATH "${CEF_ROOT}/cmake")
