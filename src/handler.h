@@ -2,6 +2,7 @@
 
 #include "include/cef_client.h"
 #include <string>
+#include <vector>
 
 class Handler : public CefClient,
                 public CefLifeSpanHandler,
@@ -11,7 +12,8 @@ class Handler : public CefClient,
                 public CefContextMenuHandler,
                 public CefDragHandler {
 public:
-  Handler() = default;
+  Handler(const std::vector<std::string>& scripts,
+          const std::string& log_path);
 
   // CefClient
   CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
@@ -80,6 +82,11 @@ private:
   int browser_count_ = 0;
   bool initial_navigation_allowed_ = true;
   CefRefPtr<CefBrowser> main_browser_;
+  std::vector<std::string> scripts_;
+  std::string log_path_;
+
+  void InjectScripts(CefRefPtr<CefFrame> frame);
+  void LogError(const std::string& msg);
 
   IMPLEMENT_REFCOUNTING(Handler);
 };

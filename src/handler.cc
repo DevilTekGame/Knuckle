@@ -6,7 +6,56 @@
 #include <windows.h>
 #endif
 
-#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+
+Handler::Handler(const std::vector<std::string>& scripts,
+                 const std::string& log_path)
+    : scripts_(scripts), log_path_(log_path) {}
+
+void Handler::LogError(const std::string& msg) {
+  std::ofstream log(log_path_ + "/knuckle.log", std::ios::app);
+  if (!log) return;
+  std::time_t t = std::time(nullptr);
+  char buf[32];
+  buf[std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S",
+                    std::localtime(&t))] = '\0';
+  log << "[" << buf << "] ERROR: " << msg << std::endl;
+}
+
+void Handler::InjectScripts(CefRefPtr<CefFrame> frame) {
+  for (const auto& script : scripts_) {
+    std::string path = script;
+
+#if defined(OS_WIN)
+    bool is_absolute =
+        (path.size() >= 3 && path[1] == ':') ||
+        path[0] == '/' || path[0] == '\\';
+#else
+    bool is_absolute = !path.empty() && path[0] == '/';
+#endif
+
+    if (!is_absolute) {
+      path = log_path_ + "/" + path;
+    }
+
+    std::ifstream file(path);
+    if (!file) {
+      LogError("Failed to open script: " + path);
+      continue;
+    }
+    std::stringstream ss;
+    ss << file.rdbuf();
+    std::string content = ss.str();
+    if (content.empty()) {
+      LogError("Empty script: " + path);
+      continue;
+    }
+
+    frame->ExecuteJavaScript(content, path, 0);
+  }
+}
 
 void Handler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   if (!main_browser_) {
@@ -58,20 +107,18 @@ bool Handler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 }
 
 void Handler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                        CefRefPtr<CefFrame> frame,
-                        int httpStatusCode) {
+                         CefRefPtr<CefFrame> frame,
+                         int httpStatusCode) {
   if (frame->IsMain()) {
-    std::cout << "[Knuckle] Loaded: " << frame->GetURL().ToString()
-              << " (status: " << httpStatusCode << ")" << std::endl;
+    InjectScripts(frame);
   }
 }
 
 bool Handler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
-                               cef_log_severity_t level,
-                               const CefString& message,
-                               const CefString& source,
-                               int line) {
-  std::cout << "[console] " << message.ToString() << std::endl;
+                                cef_log_severity_t level,
+                                const CefString& message,
+                                const CefString& source,
+                                int line) {
   return false;
 }
 

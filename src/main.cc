@@ -14,6 +14,8 @@
 #endif
 
 #include <string>
+#include <sstream>
+#include <vector>
 
 namespace {
 
@@ -61,14 +63,29 @@ public:
   }
 
   void OnContextInitialized() override {
-    CefRefPtr<Handler> handler(new Handler());
+    CefRefPtr<CefCommandLine> cmd = CefCommandLine::GetGlobalCommandLine();
+
+    std::vector<std::string> scripts;
+    if (cmd->HasSwitch("script")) {
+      std::string val = cmd->GetSwitchValue("script");
+      std::stringstream ss(val);
+      std::string item;
+      while (std::getline(ss, item, ',')) {
+        size_t s = item.find_first_not_of(" \t\r\n");
+        size_t e = item.find_last_not_of(" \t\r\n");
+        if (s != std::string::npos) {
+          scripts.push_back(item.substr(s, e - s + 1));
+        }
+      }
+    }
+
+    CefRefPtr<Handler> handler(new Handler(scripts, base_path_));
 
     CefBrowserSettings settings;
     CefWindowInfo window_info;
 
     std::string url = "file:///" + base_path_ + "/app/index.html";
 
-    CefRefPtr<CefCommandLine> cmd = CefCommandLine::GetGlobalCommandLine();
     if (cmd->HasSwitch("app")) {
       url = cmd->GetSwitchValue("app");
     } else if (cmd->HasSwitch("url")) {
