@@ -5,11 +5,56 @@
 #if defined(OS_WIN)
 #include "include/cef_sandbox_win.h"
 #include <shellapi.h>
+#elif defined(OS_LINUX)
+#include <unistd.h>
+#include <climits>
+#elif defined(OS_MAC)
+#include <mach-o/dyld.h>
+#include <climits>
 #endif
+
+#include <string>
+
+namespace {
+
+std::string GetExeDirectory() {
+#if defined(OS_WIN)
+  char path[MAX_PATH];
+  GetModuleFileNameA(nullptr, path, MAX_PATH);
+  std::string s(path);
+  auto pos = s.find_last_of("\\/");
+  s = s.substr(0, pos);
+  for (auto& c : s)
+    if (c == '\\') c = '/';
+  return s;
+#elif defined(OS_LINUX)
+  char path[PATH_MAX];
+  ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
+  if (len != -1) {
+    path[len] = '\0';
+    std::string s(path);
+    auto pos = s.find_last_of("/\\");
+    return s.substr(0, pos);
+  }
+  return ".";
+#elif defined(OS_MAC)
+  char path[PATH_MAX];
+  uint32_t size = sizeof(path);
+  if (_NSGetExecutablePath(path, &size) == 0) {
+    std::string s(path);
+    auto pos = s.find_last_of("/\\");
+    return s.substr(0, pos);
+  }
+  return ".";
+#endif
+}
+
+}  // namespace
 
 class KnuckleApp : public CefApp, public CefBrowserProcessHandler {
 public:
-  KnuckleApp() = default;
+  explicit KnuckleApp(const std::string& base_path)
+      : base_path_(base_path) {}
 
   CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override {
     return this;
@@ -21,7 +66,7 @@ public:
     CefBrowserSettings settings;
     CefWindowInfo window_info;
 
-    std::string url = "http://localhost:5173";
+    std::string url = "file:///" + base_path_ + "/app/index.html";
 
     CefRefPtr<CefCommandLine> cmd = CefCommandLine::GetGlobalCommandLine();
     if (cmd->HasSwitch("app")) {
@@ -44,6 +89,9 @@ public:
   }
 
   IMPLEMENT_REFCOUNTING(KnuckleApp);
+
+private:
+  std::string base_path_;
 };
 
 #if defined(OS_WIN)
@@ -66,7 +114,7 @@ int main(int argc, char* argv[]) {
   sandbox_info = scoped_sandbox.sandbox_info();
 #endif
 
-  CefRefPtr<KnuckleApp> app(new KnuckleApp);
+  CefRefPtr<KnuckleApp> app(new KnuckleApp(GetExeDirectory()));
 
   CefSettings settings;
   settings.no_sandbox = true;

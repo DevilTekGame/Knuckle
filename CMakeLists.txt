@@ -48,8 +48,8 @@ endif()
 
 add_custom_command(TARGET Knuckle POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_SOURCE_DIR}/web"
-    "${CEF_TARGET_OUT_DIR}/web"
+    "${CMAKE_SOURCE_DIR}/app"
+    "${CEF_TARGET_OUT_DIR}/app"
   COMMENT "Copying web resources")
 
 # ── package target: create portable archive ──────────────────────────────
@@ -60,8 +60,8 @@ add_custom_target(package
   DEPENDS Knuckle
   COMMAND ${CMAKE_COMMAND} -E make_directory "${PACKAGE_DIR}"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_TARGET_OUT_DIR}" "${PACKAGE_DIR}"
-  COMMAND ${CMAKE_COMMAND} -E remove -f "${PACKAGE_DIR}/web"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/web" "${PACKAGE_DIR}/web"
+  COMMAND ${CMAKE_COMMAND} -E remove -f "${PACKAGE_DIR}/app"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/app" "${PACKAGE_DIR}/app"
   COMMENT "Packaging ${PACKAGE_NAME}"
   VERBATIM)
 
