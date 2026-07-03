@@ -20,7 +20,7 @@ set(CEF_VERSION "149.0.6+g0d0eeb6+chromium-149.0.7827.201" CACHE STRING "CEF bin
 
 if(WIN32)
   set(CEF_PLATFORM "windows64")
-  set(CEF_EXT "zip")
+  set(CEF_EXT "tar.bz2")
 elseif(APPLE)
   set(CEF_PLATFORM "macosx64")
   set(CEF_EXT "tar.bz2")
