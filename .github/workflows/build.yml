@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-2025, ubuntu-24.04, macos-15]
+        include:
+          - os: windows-2025
+            archive: zip
+          - os: ubuntu-24.04
+            archive: tar.gz
+          - os: macos-15
+            archive: tar.gz
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -DUSE_SANDBOX=OFF
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Package
+        run: cmake --build build --config Release --target package_archive
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Knuckle-${{ matrix.os }}
+          path: build/Knuckle-*.${{ matrix.archive }}
