@@ -24,16 +24,15 @@ public:
     std::string url = "http://localhost:5173";
 
     CefRefPtr<CefCommandLine> cmd = CefCommandLine::GetGlobalCommandLine();
-    if (cmd->HasSwitch("url")) {
+    if (cmd->HasSwitch("app")) {
+      url = cmd->GetSwitchValue("app");
+    } else if (cmd->HasSwitch("url")) {
       url = cmd->GetSwitchValue("url");
     }
 
+    window_info.SetAsPopup(0, "Knuckle");
 #if defined(OS_WIN)
-    window_info.SetAsPopup(nullptr, "Knuckle");
     window_info.style |= WS_VISIBLE;
-#else
-    CefRect bounds = {0, 0, 0, 0};
-    window_info.SetAsChild(0, bounds);
 #endif
 
     CefBrowserHost::CreateBrowserSync(window_info, handler, url, settings,

@@ -27,6 +27,22 @@ void Handler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   }
 }
 
+bool Handler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefFrame> frame,
+                             int popup_id,
+                             const CefString& target_url,
+                             const CefString& target_frame_name,
+                             WindowOpenDisposition target_disposition,
+                             bool user_gesture,
+                             const CefPopupFeatures& popupFeatures,
+                             CefWindowInfo& windowInfo,
+                             CefRefPtr<CefClient>& client,
+                             CefBrowserSettings& settings,
+                             CefRefPtr<CefDictionaryValue>& extra_info,
+                             bool* no_javascript_access) {
+  return true;
+}
+
 void Handler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                         CefRefPtr<CefFrame> frame,
                         int httpStatusCode) {
@@ -43,6 +59,45 @@ bool Handler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                int line) {
   std::cout << "[console] " << message.ToString() << std::endl;
   return false;
+}
+
+bool Handler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefFrame> frame,
+                              CefRefPtr<CefRequest> request,
+                              bool user_gesture,
+                              bool is_redirect) {
+  if (!frame->IsMain()) {
+    return false;
+  }
+  if (initial_navigation_allowed_) {
+    initial_navigation_allowed_ = false;
+    return false;
+  }
+  if (is_redirect) {
+    return false;
+  }
+  return true;
+}
+
+void Handler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefContextMenuParams> params,
+                                   CefRefPtr<CefMenuModel> model) {
+  model->Clear();
+}
+
+bool Handler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
+                                    CefRefPtr<CefContextMenuParams> params,
+                                    int command_id,
+                                    EventFlags event_flags) {
+  return false;
+}
+
+bool Handler::OnDragEnter(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefDragData> dragData,
+                           DragOperationsMask mask) {
+  return true;
 }
 
 void Handler::CloseAllBrowsers(bool force_close) {
