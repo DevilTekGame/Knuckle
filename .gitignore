@@ -1,5 +1,6 @@
 cef_binary_*
 build/
+tools/
 *.zip
 *.tar.gz
 *.tar.bz2
