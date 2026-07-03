@@ -13,6 +13,10 @@ set(KNUCKLE_SRCS
   src/handler.cc
 )
 
+if(OS_WINDOWS)
+  list(APPEND KNUCKLE_SRCS src/resources/app.rc)
+endif()
+
 SET_CEF_TARGET_OUT_DIR()
 
 if(OS_WINDOWS)
