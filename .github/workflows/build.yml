@@ -2,6 +2,7 @@ name: Build
 
 on:
   push:
+    branches: [master, main]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -21,9 +22,26 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Configure
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libx11-dev
+
+      - name: Cache CEF
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ github.workspace }}/cef_binary_*
+            ${{ github.workspace }}/cmake/CEF_*
+          key: cef-${{ runner.os }}-${{ hashFiles('cmake/DownloadCEF.cmake') }}
+
+      - name: Configure (Unix)
+        if: runner.os != 'Windows'
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
         run: cmake -B build -DUSE_SANDBOX=OFF
 
       - name: Build
@@ -32,7 +50,7 @@ jobs:
       - name: Package
         run: cmake --build build --config Release --target package_archive
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Knuckle-${{ matrix.os }}
           path: build/Knuckle-*.${{ matrix.archive }}
