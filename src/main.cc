@@ -31,6 +31,9 @@ public:
 #if defined(OS_WIN)
     window_info.SetAsPopup(nullptr, "Knuckle");
     window_info.style |= WS_VISIBLE;
+#elif defined(OS_MAC)
+    CefRect bounds = {0, 0, 0, 0};
+    window_info.SetAsChild(nullptr, bounds);
 #else
     window_info.SetAsChild(nullptr, 0, 0, 0, 0);
 #endif
