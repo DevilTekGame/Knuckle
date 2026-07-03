@@ -8,7 +8,7 @@ class Handler : public CefClient,
                 public CefLoadHandler,
                 public CefDisplayHandler {
 public:
-  explicit Handler(bool use_views = true);
+  Handler() = default;
 
   // CefClient
   CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
@@ -35,7 +35,6 @@ public:
   void CloseAllBrowsers(bool force_close);
 
 private:
-  bool use_views_;
   int browser_count_ = 0;
   CefRefPtr<CefBrowser> main_browser_;
 

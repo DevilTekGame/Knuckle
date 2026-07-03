@@ -16,7 +16,7 @@ public:
   }
 
   void OnContextInitialized() override {
-    CefRefPtr<Handler> handler(new Handler(false));
+    CefRefPtr<Handler> handler(new Handler());
 
     CefBrowserSettings settings;
     CefWindowInfo window_info;

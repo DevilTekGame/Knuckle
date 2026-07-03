@@ -3,8 +3,6 @@
 #include "include/cef_app.h"
 #include <iostream>
 
-Handler::Handler(bool use_views) : use_views_(use_views) {}
-
 void Handler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   if (!main_browser_) {
     main_browser_ = browser;
