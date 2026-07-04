@@ -176,7 +176,8 @@ int main(int argc, char* argv[]) {
   settings.no_sandbox = true;
   settings.multi_threaded_message_loop = false;
   if (!profile.empty()) {
-    settings.cache_path = GetExeDirectory() + "/cache-" + profile;
+    CefString(&settings.cache_path).FromString(
+        GetExeDirectory() + "/cache-" + profile);
   }
 
   int exit_code = CefExecuteProcess(args, app, sandbox_info);
