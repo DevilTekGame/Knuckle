@@ -59,8 +59,17 @@ public:
   explicit KnuckleApp(const std::string& base_path)
       : base_path_(base_path) {}
 
-  CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override {
+   CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override {
     return this;
+  }
+
+  void OnBeforeCommandLineProcessing(
+      const CefString& process_type,
+      CefRefPtr<CefCommandLine> command_line) override {
+    if (process_type.empty() && command_line->HasSwitch("proxy")) {
+      command_line->AppendSwitchWithValue(
+          "proxy-server", command_line->GetSwitchValue("proxy"));
+    }
   }
 
   void OnContextInitialized() override {
