@@ -130,6 +130,20 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   UNREFERENCED_PARAMETER(lpCmdLine);
 
   CefMainArgs args(hInstance);
+
+  std::string profile;
+  int wargc;
+  LPWSTR* wargv = CommandLineToArgvW(GetCommandLineW(), &wargc);
+  if (wargv) {
+    for (int i = 1; i < wargc; i++) {
+      std::wstring arg(wargv[i]);
+      if (arg.find(L"--profile=") == 0) {
+        profile.assign(arg.begin() + 10, arg.end());
+        break;
+      }
+    }
+    LocalFree(wargv);
+  }
 #else
 int main(int argc, char* argv[]) {
   CefMainArgs args(argc, argv);
@@ -139,6 +153,15 @@ int main(int argc, char* argv[]) {
   if (!library_loader.LoadInMain())
     return 1;
 #endif
+
+  std::string profile;
+  for (int i = 1; i < argc; i++) {
+    std::string arg(argv[i]);
+    if (arg.find("--profile=") == 0) {
+      profile = arg.substr(10);
+      break;
+    }
+  }
 #endif
 
   void* sandbox_info = nullptr;
@@ -152,6 +175,9 @@ int main(int argc, char* argv[]) {
   CefSettings settings;
   settings.no_sandbox = true;
   settings.multi_threaded_message_loop = false;
+  if (!profile.empty()) {
+    settings.cache_path = GetExeDirectory() + "/cache-" + profile;
+  }
 
   int exit_code = CefExecuteProcess(args, app, sandbox_info);
   if (exit_code >= 0) {
