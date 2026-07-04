@@ -11,6 +11,7 @@
 #elif defined(OS_MAC)
 #include <mach-o/dyld.h>
 #include <climits>
+#include "include/wrapper/cef_library_loader.h"
 #endif
 
 #include <string>
@@ -123,6 +124,12 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 #else
 int main(int argc, char* argv[]) {
   CefMainArgs args(argc, argv);
+
+#if defined(OS_MAC)
+  CefScopedLibraryLoader library_loader;
+  if (!library_loader.LoadInMain())
+    return 1;
+#endif
 #endif
 
   void* sandbox_info = nullptr;
