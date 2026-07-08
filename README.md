@@ -8,7 +8,7 @@ Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (C
 Knuckle --url="https://example.com"
 ```
 
-If no `--url` or `--app` is given, it loads `app/index.html` from the executable directory.
+If `--url` is not given, it loads `app/index.html` from the executable directory.
 
 ## Flags
 
