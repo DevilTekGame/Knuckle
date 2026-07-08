@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <ctime>
+#include <cstdio>
 #include <algorithm>
 #include <cctype>
 
@@ -97,10 +98,15 @@ void Handler::OpenScriptPanel() {
   std::string url = BuildPanelHtml();
   CefWindowInfo windowInfo;
   CefBrowserSettings settings;
+#if defined(OS_WIN)
   windowInfo.SetAsPopup(nullptr, "Knuckle Scripts");
+#else
+  CefRect bounds = {20, 60, 380, 500};
+  windowInfo.SetAsChild(0, bounds);
+#endif
+  windowInfo.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
   CefBrowserHost::CreateBrowser(windowInfo, this, url, settings,
-                                CefRefPtr<CefDictionaryValue>(),
-                                CefRefPtr<CefRequestContext>());
+                                nullptr, nullptr);
 }
 
 void Handler::CloseScriptPanel() {
@@ -247,7 +253,7 @@ bool Handler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   if (!frame->IsMain()) {
     return false;
   }
-  if (browser->IsSame(panel_browser_)) {
+  if (!browser->IsSame(main_browser_)) {
     return false;
   }
   if (initial_navigation_allowed_) {
