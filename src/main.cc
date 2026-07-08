@@ -17,7 +17,10 @@
 #include <string>
 #include <sstream>
 #include <vector>
+
+#if !defined(OS_WIN)
 #include <dirent.h>
+#endif
 
 namespace {
 
