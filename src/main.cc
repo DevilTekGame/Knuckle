@@ -8,7 +8,6 @@
 #elif defined(OS_LINUX)
 #include <unistd.h>
 #include <climits>
-#include <dirent.h>
 #elif defined(OS_MAC)
 #include <mach-o/dyld.h>
 #include <climits>
@@ -18,6 +17,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <dirent.h>
 
 namespace {
 
