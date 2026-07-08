@@ -8,8 +8,6 @@ Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (C
 Knuckle --url="https://example.com"
 ```
 
-If `--url` is not given, it loads a built-in default page.
-
 ## Flags
 
 | Flag | Description |
