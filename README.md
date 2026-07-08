@@ -15,7 +15,7 @@ If no `--url` or `--app` is given, it loads `app/index.html` from the executable
 | Flag | Description |
 |------|-------------|
 | `--url=<url>` | Navigate to a URL |
-| `--proxy=<proxy>` | Set CEF proxy server (`HTTP`/`SOCKS4`/`SOCKS5`) |
+| `--proxy=<proxy>` | Set proxy server (`HTTP`/`SOCKS4`/`SOCKS5`) |
 | `--profile=<name>` | Enable persistent cache at `profiles/<name>/` |
 | `--script=<files>` | Inject JS files on every page load (comma-separated) |
 | `--script-dir=<dir>` | Load all `.js` files from a directory as scripts |
