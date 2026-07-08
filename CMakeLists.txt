@@ -7,12 +7,6 @@ find_package(CEF REQUIRED)
 
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 
-# Embed app/index.html as a C++ string at build time
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/app/index.html" APP_HTML)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/default_page.h.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/generated/default_page.h" @ONLY)
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/generated")
-
 set(KNUCKLE_SRCS
   src/main.cc
   src/handler.h

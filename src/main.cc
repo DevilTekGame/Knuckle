@@ -1,7 +1,6 @@
 #include "handler.h"
 #include "include/cef_app.h"
 #include "include/cef_command_line.h"
-#include "default_page.h"
 
 #if defined(OS_WIN)
 #include "include/cef_sandbox_win.h"
@@ -125,7 +124,20 @@ public:
     CefBrowserSettings settings;
     CefWindowInfo window_info;
 
-    std::string url = std::string("data:text/html,") + kDefaultHtml;
+    std::string url =
+        "data:text/html,<!DOCTYPE html>"
+        "<html lang=\"en\"><head><meta charset=\"UTF-8\">"
+        "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">"
+        "<title>Knuckle</title>"
+        "<style>*{margin:0;padding:0;box-sizing:border-box}"
+        "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;"
+        "background:#1a1a2e;color:#eee;display:flex;align-items:center;justify-content:center;height:100vh}"
+        ".container{text-align:center}"
+        "h1{font-size:3rem;margin-bottom:.5rem}"
+        "p{color:#888;font-size:1.1rem}</style></head>"
+        "<body><div class=\"container\">"
+        "<h1>Knuckle</h1><p>CEF app ready.</p>"
+        "</div></body></html>";
 
     if (cmd->HasSwitch("url")) {
       url = cmd->GetSwitchValue("url");
