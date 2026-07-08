@@ -4,6 +4,7 @@
 #include "include/cef_keyboard_handler.h"
 #include <string>
 #include <vector>
+#include <set>
 
 class Handler : public CefClient,
                 public CefLifeSpanHandler,
@@ -90,11 +91,18 @@ private:
   int browser_count_ = 0;
   bool initial_navigation_allowed_ = true;
   CefRefPtr<CefBrowser> main_browser_;
+  CefRefPtr<CefBrowser> panel_browser_;
   std::vector<std::string> scripts_;
+  std::set<size_t> disabled_scripts_;
   std::string log_path_;
 
   void InjectScripts(CefRefPtr<CefFrame> frame);
   void LogError(const std::string& msg);
+  void ToggleScriptPanel();
+  void OpenScriptPanel();
+  void CloseScriptPanel();
+  std::string BuildPanelHtml();
+  std::string UrlEncode(const std::string& val);
 
   IMPLEMENT_REFCOUNTING(Handler);
 };
