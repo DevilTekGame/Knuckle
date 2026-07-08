@@ -33,7 +33,14 @@ Built automatically via GitHub Actions for Windows, Linux, and macOS. See [relea
 
 To build manually:
 
+**Windows**
+```sh
+cmake -B build -DUSE_SANDBOX=OFF
+cmake --build build --config Release
+```
+
+**Linux / macOS**
 ```sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF
-cmake --build build --config Release
+cmake --build build
 ```
