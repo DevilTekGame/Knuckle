@@ -5,7 +5,7 @@ Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (C
 ## Usage
 
 ```
-Knuckle --url="https://example.com" --proxy="socks5://127.0.0.1:8403"
+Knuckle --url="https://example.com"
 ```
 
 If no `--url` or `--app` is given, it loads `app/index.html` from the executable directory.
