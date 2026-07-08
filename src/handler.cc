@@ -101,7 +101,7 @@ void Handler::OpenScriptPanel() {
 #if defined(OS_WIN)
   windowInfo.SetAsPopup(nullptr, "Knuckle Scripts");
 #else
-  CefRect bounds = {20, 60, 380, 500};
+  CefRect bounds = {20, 60, 380, 700};
   windowInfo.SetAsChild(0, bounds);
 #endif
   windowInfo.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
@@ -161,7 +161,7 @@ void Handler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     RECT rect = {};
     if (GetWindowRect(mainHwnd, &rect)) {
       int width = 380;
-      int height = std::min(40 + (int)scripts_.size() * 36, 500);
+      int height = std::min(40 + (int)scripts_.size() * 36, 700);
       SetWindowPos(panelHwnd, nullptr,
                    rect.left + (rect.right - rect.left) - width - 20,
                    rect.top + 60, width, height, SWP_NOZORDER);
