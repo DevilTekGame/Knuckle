@@ -8,6 +8,7 @@
 #elif defined(OS_LINUX)
 #include <unistd.h>
 #include <climits>
+#include <dirent.h>
 #elif defined(OS_MAC)
 #include <mach-o/dyld.h>
 #include <climits>
@@ -87,6 +88,32 @@ public:
           scripts.push_back(item.substr(s, e - s + 1));
         }
       }
+    }
+    if (cmd->HasSwitch("script-dir")) {
+      std::string dir = cmd->GetSwitchValue("script-dir");
+#if defined(OS_WIN)
+      std::string pattern = dir + "/*.js";
+      WIN32_FIND_DATAA ffd;
+      HANDLE hFind = FindFirstFileA(pattern.c_str(), &ffd);
+      if (hFind != INVALID_HANDLE_VALUE) {
+        do {
+          scripts.push_back(dir + "/" + ffd.cFileName);
+        } while (FindNextFileA(hFind, &ffd));
+        FindClose(hFind);
+      }
+#else
+      DIR* d = opendir(dir.c_str());
+      if (d) {
+        struct dirent* entry;
+        while ((entry = readdir(d)) != nullptr) {
+          std::string name(entry->d_name);
+          if (name.size() > 3 && name.substr(name.size() - 3) == ".js") {
+            scripts.push_back(dir + "/" + name);
+          }
+        }
+        closedir(d);
+      }
+#endif
     }
 
     CefRefPtr<Handler> handler(new Handler(scripts, base_path_));
