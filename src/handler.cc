@@ -263,6 +263,9 @@ bool Handler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   if (is_redirect) {
     return false;
   }
+  if (request->GetURL() == browser->GetMainFrame()->GetURL()) {
+    return false;
+  }
   return true;
 }
 
