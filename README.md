@@ -1,6 +1,6 @@
 # Knuckle
 
-Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (Chromium Embedded Framework). Runs a local `app/index.html` (or any URL) in a kiosk-like window with script injection, proxy support, and persistent profiles.
+Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (Chromium Embedded Framework). Runs any URL in a kiosk-like window with script injection, proxy support, and persistent profiles.
 
 ## Usage
 
@@ -8,7 +8,7 @@ Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (C
 Knuckle --url="https://example.com"
 ```
 
-If `--url` is not given, it loads `app/index.html` from the executable directory.
+If `--url` is not given, it loads a built-in default page.
 
 ## Flags
 
