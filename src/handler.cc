@@ -98,7 +98,9 @@ void Handler::OpenScriptPanel() {
   CefWindowInfo windowInfo;
   CefBrowserSettings settings;
   windowInfo.SetAsPopup(nullptr, "Knuckle Scripts");
-  CefBrowserHost::CreateBrowser(windowInfo, this, url, settings, nullptr, nullptr);
+  CefBrowserHost::CreateBrowser(windowInfo, this, url, settings,
+                                CefRefPtr<CefDictionaryValue>(),
+                                CefRefPtr<CefRequestContext>());
 }
 
 void Handler::CloseScriptPanel() {
