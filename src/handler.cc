@@ -164,6 +164,7 @@ bool Handler::OnDragEnter(CefRefPtr<CefBrowser> browser,
 bool Handler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
                           const CefKeyEvent& event,
                           CefEventHandle os_event) {
+  (void)os_event;
   if (event.type == KEYEVENT_RAWKEYDOWN && event.windows_key_code == 116) {
     browser->GetHost()->Reload();
     return true;
