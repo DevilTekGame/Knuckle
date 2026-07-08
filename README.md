@@ -1,11 +1,42 @@
-CommandLine:
-  --url="https://blahblah.com"  
-  --proxy="sock5://127.0.0.1:8403"
-  --script="somescripttorun.js"
-  --script-dir="your/dir/to/script"
-  --profile="YourProfileName"
+# Knuckle
 
-ShortKey:
-  F5 :  Reload
-  F9 :  Script Panel
- 
+Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (Chromium Embedded Framework). Runs a local `app/index.html` (or any URL) in a kiosk-like window with script injection, proxy support, and persistent profiles.
+
+## Usage
+
+```
+Knuckle --url="https://example.com" --proxy="socks5://127.0.0.1:8403"
+```
+
+If no `--url` or `--app` is given, it loads `app/index.html` from the executable directory.
+
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| `--url=<url>` | Navigate to a URL |
+| `--app=<url>` | Same as `--url` |
+| `--proxy=<proxy>` | Set CEF proxy server (e.g. `socks5://127.0.0.1:8403`) |
+| `--profile=<name>` | Enable persistent cache at `profiles/<name>/` |
+| `--script=<files>` | Inject JS files on every page load (comma-separated) |
+| `--script-dir=<dir>` | Load all `.js` files from a directory as scripts |
+
+## Keys
+
+| Key | Action |
+|-----|--------|
+| F5  | Reload the page |
+| F9  | Toggle script panel (dock right) |
+
+The script panel shows all `--script` and `--script-dir` files. Uncheck a script to disable it on subsequent page loads.
+
+## Build
+
+Built automatically via GitHub Actions for Windows, Linux, and macOS. See [releases](https://github.com/DevilTekGame/Knuckle/releases) for prebuilt archives.
+
+To build manually:
+
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DUSE_SANDBOX=OFF
+cmake --build build --config Release
+```
