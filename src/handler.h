@@ -1,6 +1,7 @@
 #pragma once
 
 #include "include/cef_client.h"
+#include "include/cef_keyboard_handler.h"
 #include <string>
 #include <vector>
 
@@ -10,7 +11,8 @@ class Handler : public CefClient,
                 public CefDisplayHandler,
                 public CefRequestHandler,
                 public CefContextMenuHandler,
-                public CefDragHandler {
+                public CefDragHandler,
+                public CefKeyboardHandler {
 public:
   Handler(const std::vector<std::string>& scripts,
           const std::string& log_path);
@@ -22,6 +24,7 @@ public:
   CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
   CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override { return this; }
   CefRefPtr<CefDragHandler> GetDragHandler() override { return this; }
+  CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override { return this; }
 
   // CefLifeSpanHandler
   void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
@@ -75,6 +78,11 @@ public:
   bool OnDragEnter(CefRefPtr<CefBrowser> browser,
                    CefRefPtr<CefDragData> dragData,
                    DragOperationsMask mask) override;
+
+  // CefKeyboardHandler
+  bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
+                  const CefKeyEvent& event,
+                  CefEventHandle os_event) override;
 
   void CloseAllBrowsers(bool force_close);
 
