@@ -1,5 +1,6 @@
 #include "handler.h"
 #include "include/cef_browser.h"
+#include "include/cef_frame.h"
 #include "include/cef_app.h"
 
 #if defined(OS_WIN)
@@ -166,7 +167,10 @@ bool Handler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
                           CefEventHandle os_event) {
   (void)os_event;
   if (event.type == KEYEVENT_RAWKEYDOWN && event.windows_key_code == 116) {
-    browser->GetHost()->Reload();
+    CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+    if (frame) {
+      frame->LoadURL(frame->GetURL());
+    }
     return true;
   }
   return false;
