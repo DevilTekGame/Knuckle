@@ -1,6 +1,6 @@
 # Knuckle
 
-Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/) (Chromium Embedded Framework). Runs any URL in a kiosk-like window with script injection, proxy support, and persistent profiles.
+Desktop app wrapper around [CEF](https://bitbucket.org/chromiumembedded/cef/). Runs any URL in a kiosk-like window with script injection, proxy support, and persistent profiles.
 
 ## Usage
 
