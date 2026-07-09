@@ -236,9 +236,16 @@ bool Handler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefFrame> frame = browser->GetMainFrame();
         if (frame) {
           frame->ExecuteJavaScript(
+            "(function(){"
             "var p=document.getElementById('kn-panel');"
-            "if(p){window.__knVisible=!window.__knVisible;"
-            "p.style.right=window.__knVisible?'0px':'-340px'}",
+            "if(!p){"
+            "p=document.createElement('div');p.id='kn-panel';"
+            "p.style.cssText='position:fixed;top:0;right:-340px;width:340px;height:100%;background:#1e1e1e;color:#ccc;z-index:2147483647;transition:right 0.2s ease;box-shadow:-4px 0 12px rgba(0,0,0,0.3)';"
+            "document.body.appendChild(p);"
+            "}"
+            "window.__knVisible=!window.__knVisible;"
+            "p.style.right=window.__knVisible?'0px':'-340px';"
+            "})()",
             "", 0);
         }
         return true;
