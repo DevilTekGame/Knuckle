@@ -90,15 +90,6 @@ void Handler::InjectPanel(CefRefPtr<CefFrame> frame) {
   js += "d.style.cssText='position:fixed;top:0;right:-340px;width:340px;height:100%;background:#1e1e1e;color:#ccc;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;font-size:14px;overflow-y:auto;z-index:2147483647;transition:right 0.2s ease;box-shadow:-4px 0 12px rgba(0,0,0,0.3)';";
   js += "document.body.appendChild(d);";
   js += "window.__knPanel=d;window.__knVisible=false;";
-  js += "document.addEventListener('keydown',function(e){";
-  js += "if(e.keyCode===120){e.preventDefault();";
-  js += "var p=document.getElementById('kn-panel');";
-  js += "if(!p){p=document.createElement('div');p.id='kn-panel';";
-  js += "p.style.cssText='position:fixed;top:0;right:-340px;width:340px;height:100%;background:#1e1e1e;color:#ccc;z-index:2147483647;transition:right 0.2s ease;box-shadow:-4px 0 12px rgba(0,0,0,0.3)';";
-  js += "document.body.appendChild(p);}";
-  js += "window.__knVisible=!window.__knVisible;";
-  js += "p.style.right=window.__knVisible?'0px':'-340px';";
-  js += "}});";
   js += "})();";
 
   frame->ExecuteJavaScript(js, "", 0);
@@ -237,6 +228,18 @@ bool Handler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefFrame> frame = browser->GetMainFrame();
         if (frame) {
           frame->LoadURL(frame->GetURL());
+        }
+        return true;
+      }
+    } else if (event.windows_key_code == 120) {
+      if (browser->IsSame(main_browser_)) {
+        CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+        if (frame) {
+          frame->ExecuteJavaScript(
+            "var p=document.getElementById('kn-panel');"
+            "if(p){window.__knVisible=!window.__knVisible;"
+            "p.style.right=window.__knVisible?'0px':'-340px'}",
+            "", 0);
         }
         return true;
       }
