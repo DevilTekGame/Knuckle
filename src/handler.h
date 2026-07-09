@@ -96,6 +96,7 @@ private:
   std::string log_path_;
 
   void InjectScripts(CefRefPtr<CefFrame> frame);
+  void InjectScript(CefRefPtr<CefFrame> frame, size_t index);
   void InjectPanel(CefRefPtr<CefFrame> frame);
   void LogError(const std::string& msg);
   std::string PanelCreationJS();

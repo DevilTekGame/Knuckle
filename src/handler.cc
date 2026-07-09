@@ -31,35 +31,40 @@ void Handler::LogError(const std::string& msg) {
 void Handler::InjectScripts(CefRefPtr<CefFrame> frame) {
   for (size_t i = 0; i < scripts_.size(); i++) {
     if (disabled_scripts_.count(i)) continue;
-    std::string path = scripts_[i];
+    InjectScript(frame, i);
+  }
+}
+
+void Handler::InjectScript(CefRefPtr<CefFrame> frame, size_t index) {
+  if (index >= scripts_.size()) return;
+  std::string path = scripts_[index];
 
 #if defined(OS_WIN)
-    bool is_absolute =
-        (path.size() >= 3 && path[1] == ':') ||
-        path[0] == '/' || path[0] == '\\';
+  bool is_absolute =
+      (path.size() >= 3 && path[1] == ':') ||
+      path[0] == '/' || path[0] == '\\';
 #else
-    bool is_absolute = !path.empty() && path[0] == '/';
+  bool is_absolute = !path.empty() && path[0] == '/';
 #endif
 
-    if (!is_absolute) {
-      path = log_path_ + "/" + path;
-    }
-
-    std::ifstream file(path);
-    if (!file) {
-      LogError("Failed to open script: " + path);
-      continue;
-    }
-    std::stringstream ss;
-    ss << file.rdbuf();
-    std::string content = ss.str();
-    if (content.empty()) {
-      LogError("Empty script: " + path);
-      continue;
-    }
-
-    frame->ExecuteJavaScript(content, path, 0);
+  if (!is_absolute) {
+    path = log_path_ + "/" + path;
   }
+
+  std::ifstream file(path);
+  if (!file) {
+    LogError("Failed to open script: " + path);
+    return;
+  }
+  std::stringstream ss;
+  ss << file.rdbuf();
+  std::string content = ss.str();
+  if (content.empty()) {
+    LogError("Empty script: " + path);
+    return;
+  }
+
+  frame->ExecuteJavaScript(content, path, 0);
 }
 
 std::string Handler::EscapeJS(const std::string& s) {
@@ -181,10 +186,13 @@ bool Handler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
     if (colon != std::string::npos) {
       size_t idx = std::stoul(msg.substr(prefix.size(), colon - prefix.size()));
       bool enabled = msg.substr(colon + 1) == "true";
-      if (enabled)
+      if (enabled) {
         disabled_scripts_.erase(idx);
-      else
+        CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+        if (frame) InjectScript(frame, idx);
+      } else {
         disabled_scripts_.insert(idx);
+      }
     }
     return true;
   }
