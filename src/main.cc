@@ -124,8 +124,21 @@ public:
     CefBrowserSettings settings;
     CefWindowInfo window_info;
 
-    std::string url =
-        "data:text/html,<!DOCTYPE html>"
+    auto escapeDataURI = [](const std::string& s) {
+      std::string r;
+      for (char c : s) {
+        if (c == '#')       r += "%23";
+        else if (c == '%')  r += "%25";
+        else if (c == ' ')  r += "%20";
+        else if (c == '\n') r += "%0A";
+        else if (c == '\r') r += "%0D";
+        else                r += c;
+      }
+      return r;
+    };
+
+    std::string html =
+        "<!DOCTYPE html>"
         "<html lang=\"en\"><head><meta charset=\"UTF-8\">"
         "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">"
         "<title>Knuckle</title>"
@@ -138,6 +151,7 @@ public:
         "<body><div class=\"container\">"
         "<h1>Knuckle</h1><p>CEF app ready.</p>"
         "</div></body></html>";
+    std::string url = "data:text/html," + escapeDataURI(html);
 
     if (cmd->HasSwitch("url")) {
       url = cmd->GetSwitchValue("url");
