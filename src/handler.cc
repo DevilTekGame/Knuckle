@@ -81,6 +81,14 @@ std::string Handler::EscapeJS(const std::string& s) {
 
 std::string Handler::PanelCreationJS() {
   std::string html;
+  html += "<style>"
+  ".kn-switch{position:relative;display:inline-block;width:36px;height:20px;margin-right:10px;flex-shrink:0}"
+  ".kn-switch input{opacity:0;width:0;height:0}"
+  ".kn-switch .kn-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#555;border-radius:20px;transition:.3s}"
+  ".kn-switch .kn-slider::before{position:absolute;content:'';height:14px;width:14px;left:3px;bottom:3px;background:#ccc;border-radius:50%;transition:.3s}"
+  ".kn-switch input:checked+.kn-slider{background:#4ea8de}"
+  ".kn-switch input:checked+.kn-slider::before{transform:translateX(16px);background:#fff}"
+  "</style>";
   html += "<div style=\"padding:12px 16px;font-size:15px;font-weight:600;border-bottom:1px solid #333\">Scripts</div>";
   html += "<div style=\"padding:8px 0\">";
   if (scripts_.empty()) {
@@ -92,9 +100,12 @@ std::string Handler::PanelCreationJS() {
       if (sep != std::string::npos) fname = fname.substr(sep + 1);
       bool disabled = disabled_scripts_.count(i) > 0;
       html += "<label style=\"display:flex;align-items:center;padding:8px 16px;cursor:pointer\">";
-      html += "<input type=\"checkbox\" style=\"margin-right:10px;accent-color:#4ea8de;width:16px;height:16px;cursor:pointer\"";
+      html += "<label class=\"kn-switch\">";
+      html += "<input type=\"checkbox\"";
       if (!disabled) html += " checked";
       html += " onchange=\"console.log('KSCRIPT_TOGGLE:" + std::to_string(i) + ":'+this.checked)\">";
+      html += "<span class=\"kn-slider\"></span>";
+      html += "</label>";
       html += "<span style=\"font-size:14px\">" + fname + "</span>";
       html += "</label>";
     }
