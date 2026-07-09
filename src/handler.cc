@@ -62,36 +62,54 @@ void Handler::InjectScripts(CefRefPtr<CefFrame> frame) {
   }
 }
 
-void Handler::InjectPanel(CefRefPtr<CefFrame> frame) {
-  std::string js;
-  js += "(function(){";
-  js += "var e=document.getElementById('kn-panel');if(e)return;";
-  js += "var d=document.createElement('div');d.id='kn-panel';";
-  js += "d.innerHTML='<div style=\"padding:12px 16px;font-size:15px;font-weight:600;border-bottom:1px solid #333\">Scripts</div><div style=\"padding:8px 0\">";
+std::string Handler::EscapeJS(const std::string& s) {
+  std::string r;
+  for (char c : s) {
+    if (c == '\\') r += "\\\\";
+    else if (c == '\'') r += "\\'";
+    else if (c == '\n') r += "\\n";
+    else if (c == '\r') r += "\\r";
+    else r += c;
+  }
+  return r;
+}
 
+std::string Handler::PanelCreationJS() {
+  std::string html;
+  html += "<div style=\"padding:12px 16px;font-size:15px;font-weight:600;border-bottom:1px solid #333\">Scripts</div>";
+  html += "<div style=\"padding:8px 0\">";
   if (scripts_.empty()) {
-    js += "<div style=\"padding:8px 16px;color:#888;font-size:13px\">No scripts loaded.</div>";
+    html += "<div style=\"padding:8px 16px;color:#888;font-size:13px\">No scripts loaded.</div>";
   } else {
     for (size_t i = 0; i < scripts_.size(); i++) {
       std::string fname = scripts_[i];
       size_t sep = fname.find_last_of("/\\");
       if (sep != std::string::npos) fname = fname.substr(sep + 1);
       bool disabled = disabled_scripts_.count(i) > 0;
-      js += "<label style=\"display:flex;align-items:center;padding:8px 16px;cursor:pointer\">";
-      js += "<input type=\"checkbox\" style=\"margin-right:10px;accent-color:#4ea8de;width:16px;height:16px;cursor:pointer\"";
-      if (!disabled) js += " checked";
-      js += " onchange=\"console.log('KSCRIPT_TOGGLE:" + std::to_string(i) + ":'+this.checked)\">";
-      js += "<span style=\"font-size:14px\">" + fname + "</span>";
-      js += "</label>";
+      html += "<label style=\"display:flex;align-items:center;padding:8px 16px;cursor:pointer\">";
+      html += "<input type=\"checkbox\" style=\"margin-right:10px;accent-color:#4ea8de;width:16px;height:16px;cursor:pointer\"";
+      if (!disabled) html += " checked";
+      html += " onchange=\"console.log('KSCRIPT_TOGGLE:" + std::to_string(i) + ":'+this.checked)\">";
+      html += "<span style=\"font-size:14px\">" + fname + "</span>";
+      html += "</label>";
     }
   }
+  html += "</div>";
 
-  js += "</div>';";
+  std::string js;
+  js += "var d=document.createElement('div');d.id='kn-panel';";
+  js += "d.innerHTML='" + EscapeJS(html) + "';";
   js += "d.style.cssText='position:fixed;top:0;right:-340px;width:340px;height:100%;background:#1e1e1e;color:#ccc;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;font-size:14px;overflow-y:auto;z-index:2147483647;transition:right 0.2s ease;box-shadow:-4px 0 12px rgba(0,0,0,0.3)';";
   js += "document.body.appendChild(d);";
-  js += "window.__knPanel=d;window.__knVisible=false;window.__knPanelHTML=d.innerHTML;";
-  js += "})();";
+  js += "window.__knPanel=d;window.__knVisible=false;";
+  return js;
+}
 
+void Handler::InjectPanel(CefRefPtr<CefFrame> frame) {
+  std::string js = "(function(){";
+  js += "if(document.getElementById('kn-panel'))return;";
+  js += PanelCreationJS();
+  js += "})();";
   frame->ExecuteJavaScript(js, "", 0);
 }
 
@@ -239,10 +257,8 @@ bool Handler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
             "(function(){"
             "var p=document.getElementById('kn-panel');"
             "if(!p){"
-            "p=document.createElement('div');p.id='kn-panel';"
-            "p.style.cssText='position:fixed;top:0;right:-340px;width:340px;height:100%;background:#1e1e1e;color:#ccc;z-index:2147483647;transition:right 0.2s ease;box-shadow:-4px 0 12px rgba(0,0,0,0.3)';"
-            "if(window.__knPanelHTML)p.innerHTML=window.__knPanelHTML;"
-            "window.__knPanel=p;document.body.appendChild(p);"
+            + PanelCreationJS() +
+            "p=window.__knPanel;"
             "}"
             "window.__knVisible=!window.__knVisible;"
             "p.style.right=window.__knVisible?'0px':'-340px';"

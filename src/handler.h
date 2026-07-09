@@ -98,6 +98,8 @@ private:
   void InjectScripts(CefRefPtr<CefFrame> frame);
   void InjectPanel(CefRefPtr<CefFrame> frame);
   void LogError(const std::string& msg);
+  std::string PanelCreationJS();
+  std::string EscapeJS(const std::string& s);
 
   IMPLEMENT_REFCOUNTING(Handler);
 };
